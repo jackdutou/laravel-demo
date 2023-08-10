@@ -31,29 +31,32 @@ class LogRequestMiddleware
 
 
         // 记录请求信息到数据库
-        $today = now()->format('Ymd');
-        $tableName = 'log_' . $today;
-        if (!Schema::hasTable($tableName)) {
-            Schema::create($tableName, function (Blueprint $table) {
-                $table->id();
-                $table->string('request_method', 10,);
-                $table->string('request_uri', 1024);
-                $table->string('request_params', 1024);
-                $table->string('http_code', 10);
-                $table->decimal('execution_time');
-                $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
-            });
+        if($response->getStatusCode() == 200){
+            $today = now()->format('Ymd');
+            $tableName = 'log_' . $today;
+            if (!Schema::hasTable($tableName)) {
+                Schema::create($tableName, function (Blueprint $table) {
+                    $table->id();
+                    $table->string('request_method', 10,);
+                    $table->string('request_uri', 1024);
+                    $table->string('request_params', 1024);
+                    $table->string('http_code', 10);
+                    $table->decimal('execution_time');
+                    $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+                });
+            }
+            //Insert data
+            if (Schema::hasTable($tableName)) {
+                DB::table($tableName)->insert([
+                    'request_method' => $request->method(),
+                    'request_uri' => $request->path(),
+                    'request_params' => $allParams,
+                    'http_code' => $response->getStatusCode(),
+                    'execution_time' => $executionTime
+                ]);
+            }
         }
-        //Insert data
-        if (Schema::hasTable($tableName)) {
-            DB::table($tableName)->insert([
-                'request_method' => $request->method(),
-                'request_uri' => $request->path(),
-                'request_params' => $allParams,
-                'http_code' => $response->getStatusCode(),
-                'execution_time' => $executionTime
-            ]);
-        }
+
 
         return $response;
     }
