@@ -34,3 +34,23 @@ if (!function_exists('message_error')) {
         return $result;
     }
 }
+
+if (!function_exists('request_params_to_json')) {
+    /**
+     * format request parameters
+     * @param array $data
+     * @return array
+     */
+    function request_params_to_json($data = [])
+    {
+        $params = [];
+        if (!empty($data)) {
+            if (is_array($data)) {
+                $params = json_encode($data);
+            }
+        } else {
+            $params = json_encode((object)$params);
+        }
+        return $params;
+    }
+}

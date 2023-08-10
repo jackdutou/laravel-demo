@@ -40,14 +40,7 @@ class Handler extends ExceptionHandler
     public function render($request, Throwable $exception)
     {
         //params
-        $allParams = request()->all();
-        if (!empty($allParams)) {
-            if (is_array($allParams)) {
-                $allParams = json_encode($allParams);
-            }
-        } else {
-            $allParams = json_encode((object)[]);
-        }
+        $allParams = request_params_to_json(request()->all());
         //uri
         $requestUri = request()->path();
         //Create table

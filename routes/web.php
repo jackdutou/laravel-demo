@@ -20,7 +20,7 @@ Route::get('/', function () {
 });
 
 
-Route::prefix('demo')->group(function () {
+Route::prefix('demo')->middleware('log_request')->group(function () {
     Route::get('/success_get', [DemoController::class, 'success_get']);
     Route::post('/success_post', [DemoController::class, 'success_post']);
     Route::get('/expected_get', [DemoController::class, 'expected_get']);
